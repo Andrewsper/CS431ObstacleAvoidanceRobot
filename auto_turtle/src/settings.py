@@ -1,0 +1,28 @@
+#spite size
+SPRITE_SIZE =5
+STEPSIZE =5
+
+#screen config
+SCREENWIDTH = 400
+SCREENHEIGHT= 300
+
+#game loop
+FRAME_PER_SECOND = 30
+
+#colors
+YELLOW = (255,255,0)
+BLACK  = (0,0,0)
+
+#ros setting
+ROS_RATE = 30
+FOWARDSPEED = 0.2 #m/s
+ANGULARSPEED = 30 * (22 / (7*100)) #radians persec
+DT = 1/ROS_RATE
+
+TANKSCALE = 20
+LDS_SCALE = 100
+
+THRESHOLD = .25
+
+
+PIXPERM = 100
