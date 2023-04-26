@@ -24,6 +24,10 @@ class AvoidanceRobot():
         self.tw.linear.x = 0.0
         self.tw.angular.z = 0.0
         
+        # algorithm optimization
+        self.theta = int(np.rad2deg(np.arctan(ROBOT_RADIUS / COLLISION_DISTANCE)))
+        print(self.theta)
+        
         self.control_thread = threading.Thread(target=self.control_loop)
         self.subscriber_thread = threading.Thread(target=self.subscriber_thread)
         
@@ -57,14 +61,14 @@ class AvoidanceRobot():
             self.scan_data_lock.wait()
             
             collision = False
-            
+
             # check for collision
-            for i in range(0, 46):
+            for i in range(0, self.theta):
                 if self.ranges[i] <= COLLISION_DISTANCE and self.ranges[i] != 0: 
                     collision = True
                     break
             
-            for i in range(314, 360):
+            for i in range(360-self.theta, 360):
                 if self.ranges[i] <= COLLISION_DISTANCE and self.ranges[i] != 0:
                     collision = True
                     break
@@ -76,7 +80,7 @@ class AvoidanceRobot():
             normalized_set = self.ranges.copy() / np.max(self.ranges)
             
             # negate 180-359
-            for i in range(314, 360):
+            for i in range(360-self.theta, 360):
                 normalized_set[i] = -normalized_set[i]
                 
             print(np.sum(normalized_set))
@@ -101,8 +105,6 @@ class AvoidanceRobot():
     def start(self):
         self.control_thread.start()
         self.subscriber_thread.start()
-    
-
 
 if __name__ == "__main__":
     avoidance_robot = AvoidanceRobot()
