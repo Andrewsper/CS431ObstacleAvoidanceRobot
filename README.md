@@ -61,6 +61,9 @@ AvoidanceRobot class
             publish the twist message to the velocity publisher
             
             sleep for a rate of 10 Hz
+            
+       Join control_loop thread
+       Join subscriber_thread
 
 
     subscriber_thread
