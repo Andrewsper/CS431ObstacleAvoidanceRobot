@@ -109,8 +109,7 @@ AvoidanceRobot class
         start the control_thread
         start the subscriber thread
 
-2.
-to run the code start up your desired turtle_bot simulation and then run ./avoidance.py
+2.to run the code start up your desired turtle_bot simulation and then run ./avoidance.py
 
 3. the result should be a turtle_bot that drives straight until it detects a collision immenent and then turns right or left depending on
 whether the sum of the normalized ranges is negative or positive to avoid the collision
