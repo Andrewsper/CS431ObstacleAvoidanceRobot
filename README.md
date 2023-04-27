@@ -1,4 +1,4 @@
-# CS431ObstacleAvoidanceRobot
+
 1. Pseudocode to describe the project/program, including the AvoidObstacle() function.
 
 AvoidanceRobot class
