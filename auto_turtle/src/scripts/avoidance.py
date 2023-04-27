@@ -30,7 +30,7 @@ class AvoidanceRobot:
         pg.init()
         pg.display.set_caption("Smart Autonomous Robot Laser Scan")
         self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-        self.text = Text('Collision Warning') 
+        self.text = Text('Obstacle Avoidance Engaged') 
         self.running = True
             
         # Synchronization Primitives 
