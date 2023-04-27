@@ -77,7 +77,7 @@ class AvoidanceRobot:
         
     def image_callback(self, img_msg):
         try:   
-            cv_image = self.bridge.imgmsg_to_cv2(img_msg, "passthrough")
+            cv_image = self.bridge.imgmsg_to_cv2(img_msg, "bgr8")
         except CvBridgeError:
             rospy.logerr("CvBridge Error: {0}".format(CvBridgeError))
             
