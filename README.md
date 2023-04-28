@@ -1,7 +1,7 @@
 
 1. Pseudocode to describe the project/program, including the AvoidObstacle() function.
 
-AvoidanceRobot class
+```AvoidanceRobot class
 
     initialize
             
@@ -14,7 +14,7 @@ AvoidanceRobot class
                 
         initialize a ros node for AvoidanceRobot
                 
-        initialize a ros subscriber for AvoidanceRobot's lds sensors that calls ros_lds_callback when it recieves data
+        initialize a ros subscriber for AvoidanceRobot's lds sensors that calls ros_lds_callback when it receives data
         
         initialize a ros publisher for AvoidanceRobot to send twist messages to the /cmd_vel topic
 
@@ -22,23 +22,18 @@ AvoidanceRobot class
                 
         create AvoidanceRobot's Twist object and initialize its linear.x and angular.z values to 0.0
 
-        calculate the optimal detection range given the robot radius and the requested collison distance called theta
+        calculate the optimal detection range given the robot radius and the requested collision distance called theta
 
         create a thread to run the control loop
 
         create a thread to listen to the /scan messages
 
 
-
-
-
-    ros_lds_callback
+    ros_lds_callback 
 
     input: msg (array of LaserScan messages)
-
     output: updates robot ranges array
-
-        aquire the lds data condition
+        acquire the lds data condition
 
         set AvoidanceRobot's range array to the new set of lds ranges
         
@@ -111,17 +106,35 @@ AvoidanceRobot class
 
         start the control_thread
         start the subscriber thread
+        start the pygame thread
+        start the camera subscriber thread
+     
+```
 
-2.to run the code start up your desired turtle_bot simulation and then run ./avoidance.py
+2. To run the code start up your desired turtle_bot simulation and then run `avoidance.py` script 
 
-3. the result should be a turtle_bot that drives straight until it detects a collision immenent and then turns right or left depending on
-whether the sum of the normalized ranges is negative or positive to avoid the collision
+```sh   
+source ./devel/setup.bash
+export TURTLEBOT3_MODEL=waffle_pi
+roslaunch turtlebot3_gazebo turtlebot3_house.launch
+```
 
-4. There is one Condition sync primative that protects the ranges array and signals the control loop when to calculate the next decision to be published to
-/cmd_vel
+```sh
+cd auto_turtle/src/scripts
+./avoidance.py
+```
 
-5.see Pseudocode and diagrams
+3. The result should be a turtle_bot that drives straight until it detects a collision imminent and then turns right or left depending on
+whether the sum of the normalized ranges is negative or positive to avoid the collision. The LiDAR
+scan will be displayed in a Pygame window and the built-in turtlebot camera will be shown in a
+OpenCV window. 
 
-6. at the moment the robot ussally is able to turn before it collides with a corner.
+4. There is one Condition sync primitive that protects the LiDAR scan ranges array and signals the control loop when to calculate the next decision to be published to
+/cmd_vel. The synchronization primitive also signals the pygame thread to update the LiDAR scan display. Next, there is a lock primitive that protects the OpenCV camera display due to the
+multithreaded nature of this application. 
+
+5. See Pseudocode and diagrams
+
+6. The robot is able to avoid getting stuck in a corner based on the specified buffer that considers the geometry of the robot and the requested collision distance. 
 
 

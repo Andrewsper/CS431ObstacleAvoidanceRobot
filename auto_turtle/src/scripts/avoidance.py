@@ -21,7 +21,7 @@ class AvoidanceRobot:
         pg.init()
         pg.display.set_caption("Smart Autonomous Robot Laser Scan")
         self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-        self.text = Text('Obstacle Avoidance Engaged', 10, 10) 
+        self.text = Text('Obstacle Avoidance Engaged', SCREEN_WIDTH/2, 20) 
         self.ranges = np.zeros(360)
         self.lds_particles = []
         self.all_sprites = pg.sprite.Group()
@@ -122,10 +122,9 @@ class AvoidanceRobot:
             # normalize the ranges
             normalized_set = self.ranges.copy() / np.max(self.ranges)
 
-            # negate 180-359
-            for i in range(360 - self.theta, 360):
+            for i in range(359 - self.theta, 360):
                 normalized_set[i] = -normalized_set[i]
-
+                
             # get sum of the ranges
             if np.sum(normalized_set) < 0:
                 return [0.0, 0.2]

@@ -82,6 +82,6 @@ class Text(pg.sprite.Sprite):
         font = pg.font.SysFont('Arial', 30)
         self.image = font.render(text, False, YELLOW)
         self.rect = self.image.get_rect()
-        self.x = x
-        self.y = y
         
+        self.rect.center = (x, y)
+ 
