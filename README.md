@@ -24,6 +24,8 @@
 
         calculate the optimal detection range given the robot radius and the requested collision distance called theta
 
+        initialize turn left and turn right to False
+
         create a thread to run the control loop
 
         create a thread to listen to the /scan messages
@@ -78,21 +80,28 @@
         check for collision in the range of 0 to theta degrees and 360-theta to 360 degrees
 
         if collision not detected:
-
+            set go_left and go_right to False
             release the scan data lock
             return the decision array with the angular velocity to 0.0 and the linear velocity to 0.1
 
         else
 
+            if go_left:
+                set angular velocity to 0.2
+            else if go_right:
+                set angular velocity to -0.2
+
             normalize the ranges
 
-            set the values of 360-theta to 360 degrees to negative values
+            set the values of 0 to 180 degrees that are equal to zero to 1
+
+            set the values of 180 to 360 degrees that are equal to zero to -1
 
             calculate the sum of the normalized ranges
 
-            if the sum is less than 0, set the angular velocity to 0.2 and the linear velocity to 0.0
+            if the sum is less than greater than or equal to 0, set the angular velocity to 0.2 and the linear velocity to 0.0 and set go_left to True
 
-            if the sum is greater than 0, set the angular velocity to -0.2 and the linear velocity to 0.0
+            if the sum is less than 0, set the angular velocity to -0.2 and the linear velocity to 0.0 and set go_right to true
 
             release the scan data lock
 

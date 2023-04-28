@@ -26,7 +26,10 @@ class AvoidanceRobot:
         self.lds_particles = []
         self.all_sprites = pg.sprite.Group()
         self.robot = LocalRefFrame((SCREEN_WIDTH/2), (SCREEN_HEIGHT/2), self.all_sprites)
+        
         self.collision = False
+        self.go_left = False
+        self.go_right = False
         
         # Initialize LDS particles in coordinate system
         for x in range(360):
@@ -115,20 +118,36 @@ class AvoidanceRobot:
                     break
                 else:
                     self.collision = False
-
+                    
             if not self.collision:
-                return [0.2, 0.0]
+                self.go_left = False
+                self.go_right = False
+                return [0.2, 0.0] 
+            
+            if self.go_left:
+                return [0.0, 0.2]
+            elif self.go_right:
+                return [0.0, -0.2]
 
             # normalize the ranges
             normalized_set = self.ranges.copy() / np.max(self.ranges)
 
-            for i in range(359 - self.theta, 360):
+            for i in range(0,180):
+                if normalized_set[i] == 0:
+                    normalized_set[i] = 1
+
+            for i in range(180, 360):
+                if normalized_set[i] == 0:
+                    normalized_set[i] = -1
+                    continue
                 normalized_set[i] = -normalized_set[i]
                 
             # get sum of the ranges
-            if np.sum(normalized_set) < 0:
+            if np.sum(normalized_set[270: 360]) + np.sum(normalized_set[0:90]) >= 0:
+                self.go_left = True
                 return [0.0, 0.2]
-            elif np.sum(normalized_set) > 0:
+            elif np.sum(normalized_set[270: 360]) + np.sum(normalized_set[0:90]) < 0:
+                self.go_right = True
                 return [0.0, -0.2]
 
     def start(self):
