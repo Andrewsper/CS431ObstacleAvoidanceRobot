@@ -77,9 +77,11 @@ class LDS(pg.sprite.Sprite):
         self.rect.centery = self.y
         
 class Text(pg.sprite.Sprite): 
-    def __init__(self, text):
+    def __init__(self, text, x, y):
         super().__init__()
         font = pg.font.SysFont('Arial', 30)
         self.image = font.render(text, False, YELLOW)
         self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
         

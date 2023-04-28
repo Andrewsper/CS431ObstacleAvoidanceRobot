@@ -16,46 +16,44 @@ from sprites import LDS, LocalRefFrame, Text
 
 
 class AvoidanceRobot:
-    def __init__(self):
-        # pygame
+    def __init__(self):    
+        # Initialize Pygame
+        pg.init()
+        pg.display.set_caption("Smart Autonomous Robot Laser Scan")
+        self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.text = Text('Obstacle Avoidance Engaged', 10, 10) 
+        self.ranges = np.zeros(360)
         self.lds_particles = []
         self.all_sprites = pg.sprite.Group()
         self.robot = LocalRefFrame((SCREEN_WIDTH/2), (SCREEN_HEIGHT/2), self.all_sprites)
+        self.collision = False
         
         # Initialize LDS particles in coordinate system
         for x in range(360):
             self.lds_particles.append(LDS(self.all_sprites, self.robot, x, 0))
             
-        # Initialize Pygame
-        pg.init()
-        pg.display.set_caption("Smart Autonomous Robot Laser Scan")
-        self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-        self.text = Text('Obstacle Avoidance Engaged') 
-        self.running = True
-            
         # Synchronization Primitives 
         self.scan_data_lock = threading.Condition()
         self.image_lock = threading.Lock()
-
-        self.ranges = np.zeros(360)
 
         rospy.init_node("avoidance_robot", anonymous=True)
         self.scan_sub = rospy.Subscriber("/scan", LaserScan, self.ros_lds_callback)
         self.vel_pub = rospy.Publisher("/cmd_vel", Twist, queue_size=1)
         self.image_sub = rospy.Subscriber("/camera/rgb/image_raw", Image, self.image_callback)
         self.ros_clock = rospy.Rate(10)
-        self.collision = False
-        
-        # opencv bridge
-        self.bridge = CvBridge()
 
+        # initialize twist message for velocity control
         self.tw = Twist()
         self.tw.linear.x = 0.0
         self.tw.angular.z = 0.0
 
-        # algorithm optimization
+        # algorithm optimization (scan range)
         self.theta = int(np.rad2deg(np.arctan(ROBOT_RADIUS + ROBOT_BUFFER / COLLISION_DISTANCE)))
+        
+        # opencv bridge to convert ros image to opencv image
+        self.bridge = CvBridge()
 
+        # initialize threads for control, subscriber, camera, and pygame
         self.control_thread = threading.Thread(target=self.control_loop)
         self.control_thread.daemon = True
         self.subscriber_thread = threading.Thread(target=self.subscriber_thread)
@@ -71,7 +69,7 @@ class AvoidanceRobot:
         sys.exit()
         
     def display_image(self, img):
-        with self.image_lock:
+        with self.image_lock:         
             cv2.imshow("Smart Autonomous Robot Camera Output", img)
             cv2.waitKey(3)
         
@@ -135,6 +133,7 @@ class AvoidanceRobot:
                 return [0.0, -0.2]
 
     def start(self):
+        self.running = True
         self.control_thread.start()
         self.subscriber_thread.start()
         self.camera_thread.start()
