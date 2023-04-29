@@ -139,8 +139,8 @@ class AvoidanceRobot:
             for i in range(180, 360):
                 if normalized_set[i] == 0:
                     normalized_set[i] = -1
-                    continue
-                normalized_set[i] = -normalized_set[i]
+                else:
+                    normalized_set[i] = -normalized_set[i]
                 
             # get sum of the ranges
             if np.sum(normalized_set[270: 360]) + np.sum(normalized_set[0:90]) >= 0:

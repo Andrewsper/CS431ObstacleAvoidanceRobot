@@ -1,3 +1,5 @@
+Group Members: Creed Zagrzebski, Mickey Keating, Andrew Perrin
+
 
 1. Pseudocode to describe the project/program, including the AvoidObstacle() function.
 
@@ -25,6 +27,14 @@
         calculate the optimal detection range given the robot radius and the requested collision distance called theta
 
         initialize turn left and turn right to False
+
+        initialize the image_lock and scan_data_lock condition synchronization primitives
+
+        initialize cvBridge for ROS to CV image conversion
+
+        initialize a ros subscriber for camera
+
+        create a thread to listen to /camera messages
 
         create a thread to run the control loop
 
@@ -69,6 +79,24 @@
     output: none
 
         run rospy spin to so start listening to /scan topic
+
+    
+    image_sub_thread
+    
+    input: none
+    output: none
+        
+        run rospy spin to handle /camera topic callbacks
+  
+
+    display_image:
+    
+    input: none
+    output: none
+
+        acquires the image_lock
+        displays the image in a CV window  
+        wait for key press
 
 
     avoid_obstacle
@@ -138,12 +166,12 @@ whether the sum of the normalized ranges is negative or positive to avoid the co
 scan will be displayed in a Pygame window and the built-in turtlebot camera will be shown in a
 OpenCV window. 
 
-4. There is one Condition sync primitive that protects the LiDAR scan ranges array and signals the control loop when to calculate the next decision to be published to
-/cmd_vel. The synchronization primitive also signals the pygame thread to update the LiDAR scan display. Next, there is a lock primitive that protects the OpenCV camera display due to the
+4. There is one Condition synchronization primitive that protects the LiDAR scan ranges array and signals the control loop when to calculate the next decision to be published to
+/cmd_vel. The synchronization primitive also signals the pygame thread to update the LiDAR scan display. Next, there is a second lock-based synchronization primitive that protects the OpenCV camera display due to the
 multithreaded nature of this application. 
 
-5. See Pseudocode and diagrams
+5. See diagram in ```Diagram.pdf```. The robot first looks to see if it will collide with an obstacle. If so, it will see if avoid_obstacle has already made a decision and told the robot to move either left or right. If a decision has not yet been made, it will make a new decision based on objects located between -90 and 90 degrees. If no obstacle is detected, the robot will continue to move forward at a velocity of 0.2m/s. Pygame is used to display the Laser Scan Data and let the user know if an obstacle is detected. The OpenCV window is used to display the data from the built-in camera. 
 
-6. The robot is able to avoid getting stuck in a corner based on the specified buffer that considers the geometry of the robot and the requested collision distance. 
+6. The robot is able to avoid getting stuck in a corner based on the specified buffer that considers the geometry of the robot and the specified collision distance. If the robot does end up in a corner, it will make a decision based on obstacles located between -90 and 90 degrees and pick the direction with the least amount of interference. 
 
 
